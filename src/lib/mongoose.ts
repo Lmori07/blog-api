@@ -17,19 +17,19 @@ import { logger } from '@/lib/winston';
 /**
  * Types
  * */
-import type { ConnectOptions} from "mongoose";
+import type { ConnectOptions } from 'mongoose';
 
 /**
  * Client Option
  * */
 const clientOptions: ConnectOptions = {
-    dbName: 'blog-db',
-    appName: 'Blog API',
-    serverApi: {
-        version: '1',
-        strict: true,
-        deprecationErrors: true,
-    },
+  dbName: 'blog-db',
+  appName: 'Blog API',
+  serverApi: {
+    version: '1',
+    strict: true,
+    deprecationErrors: true,
+  },
 };
 
 /**
@@ -42,23 +42,22 @@ const clientOptions: ConnectOptions = {
  * - Errors are properly handled and rethrown for better debugging.
  * */
 export const connectToDatabase = async () => {
-    if(!config.MONGO_URI){
-        throw new Error('MongoDB URI is not defined in the config.env file');
+  if (!config.MONGO_URI) {
+    throw new Error('MongoDB URI is not defined in the config.env file');
+  }
+  try {
+    await mongoose.connect(config.MONGO_URI, clientOptions);
+    logger.info('MongoDB connected.', {
+      uri: config.MONGO_URI,
+      options: clientOptions,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
     }
-    try {
-        await mongoose.connect(config.MONGO_URI, clientOptions);
-        logger.info('MongoDB connected.',{
-            uri: config.MONGO_URI,
-            options: clientOptions,
-        });
-    }
-    catch (error) {
-        if(error instanceof Error){
-            throw error;
-        }
 
-        console.error('Error connecting to MongoDB:', error);
-    }
+    console.error('Error connecting to MongoDB:', error);
+  }
 };
 
 /**
@@ -70,17 +69,16 @@ export const connectToDatabase = async () => {
  * or logged to the console.
  * */
 export const disconnectFromDatabase = async () => {
-    try {
-        await mongoose.disconnect();
-        logger.info('MongoDB disconnected.', {
-            uri: config.MONGO_URI,
-            options: clientOptions,
-        });
+  try {
+    await mongoose.disconnect();
+    logger.info('MongoDB disconnected.', {
+      uri: config.MONGO_URI,
+      options: clientOptions,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
     }
-    catch (error) {
-        if(error instanceof Error){
-            throw new Error(error.message);
-        }
-        logger.error('Error disconnecting from MongoDB:', error);
-    }
-}
+    logger.error('Error disconnecting from MongoDB:', error);
+  }
+};
