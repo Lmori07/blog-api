@@ -4,8 +4,8 @@
  */
 
 /**
-* Import Express, Cors, cookieParser, compression, helmet
-* */
+ * Import Express, Cors, cookieParser, compression, helmet
+ * */
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -13,7 +13,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 
 /**
-*Custom Modules */
+ *Custom Modules */
 import config from '@/config';
 import limiter from '@/lib/express_rate_limit';
 import { connectToDatabase, disconnectFromDatabase } from '@/lib/mongoose';
@@ -22,26 +22,32 @@ import { logger } from '@/lib/winston';
 /**
  * Router
  * */
-import v1Routes from "@/routes/v1";
+import v1Routes from '@/routes/v1';
 
 /**
  * Types*/
-import type { CorsOptions} from "cors";
-import * as process from "node:process";
+import type { CorsOptions } from 'cors';
+import * as process from 'node:process';
 
 /**
-*Express app initialization and port initialization
+ *Express app initialization and port initialization
  * */
 const app = express();
 
 //Configure CORS options config.env will let you know which environment is active.
 const corsOptions: CorsOptions = {
-  origin(origin,callback){
-    if(config.NODE_ENV_LOCAL === 'local' || !origin || config.WHITELIST_ORIGINS.includes(origin)){
-      callback(null,true);
-    }else{
+  origin(origin, callback) {
+    if (
+      config.NODE_ENV_LOCAL === 'local' ||
+      !origin ||
+      config.WHITELIST_ORIGINS.includes(origin)
+    ) {
+      callback(null, true);
+    } else {
       //Reject request from non-allowlisted origins
-      callback(new Error(`CORS error: ${origin} is not allowed by CORS`),false,
+      callback(
+        new Error(`CORS error: ${origin} is not allowed by CORS`),
+        false,
       );
       logger.warn(`CORS error: ${origin} is not allowed by CORS`);
     }
@@ -61,9 +67,9 @@ app.use(cookieParser());
 
 // Enable response compression to reduce payload size and improve performance
 app.use(
-    compression({
-      threshold: 1024, // Only compress responses larger than 1 KB
-    })
+  compression({
+    threshold: 1024, // Only compress responses larger than 1 KB
+  }),
 );
 
 // Use Helmet to enhance security by setting various HTTP headers
@@ -89,13 +95,11 @@ app.use(limiter);
     app.listen(config.PORT, () => {
       logger.info(`Server running: http://localhost:${config.PORT}/api/v1`);
     });
+  } catch (error) {
+    logger.error('Failed to start server', error);
 
-  }
-  catch (error) {
-    logger.error('Failed to start server',error);
-
-    if(config.NODE_ENV === 'production'){
-    process.exit(1);
+    if (config.NODE_ENV === 'production') {
+      process.exit(1);
     }
   }
 })();
@@ -128,4 +132,3 @@ const handleServerShutdown = async () => {
  * to ensure proper cleanup.*/
 
 //process.on(`SIGTERM`, handleServerShutdown)
-

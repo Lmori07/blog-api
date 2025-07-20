@@ -6,7 +6,7 @@
 /**
  * Nodule Modules
  * */
-import Router, {Request, Response} from 'express';
+import Router, { Request, Response } from 'express';
 const router = Router();
 
 /**
@@ -18,13 +18,13 @@ import authRoutes from '@/routes/v1/auth';
  * Root route
  * */
 router.get('/', (req: Request, res: Response) => {
-    res.status(200).json({
-        message: 'API is alive',
-        status: 'ok',
-        version: '1.0.0',
-        docs: 'https//localhost:3000/',
-        timestamp: new Date().toISOString(),
-    });
+  res.status(200).json({
+    message: 'API is alive',
+    status: 'ok',
+    version: '1.0.0',
+    docs: 'https//localhost:3000/',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 router.use('/auth', authRoutes);
