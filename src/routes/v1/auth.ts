@@ -121,4 +121,5 @@ router.post(
 //#region Logout
 router.post('/logout', authenticate, logout);
 //#endregion
+
 export default router;
