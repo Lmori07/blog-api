@@ -7,7 +7,7 @@
  * Node Module
  * */
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body, query, param } from 'express-validator';
 
 /**
  * Middlewares
@@ -21,7 +21,9 @@ import authorize from "@/middlewares/authorize";
  * */
 import getCurrentUser from "@/controllers/v1/user/get_current_user";
 import updateCurrentUser from "@/controllers/v1/user/update_current_user";
-import deleteCurrentUser from "@/controllers/v1/user/delete_current_user";
+import getAllUser from "@/controllers/v1/user/get_all_user";
+import getUser from "@/controllers/v1/user/get_user";
+import deleteUser from "@/controllers/v1/user/delete_user";
 
 /**
  * Models
@@ -90,11 +92,46 @@ router.put('/current',
 );
 //#endregion
 
-//#region Delete current user
-router.delete('/current',
+//#region Gets all users
+router.get('/',
     authenticate,
-    authorize(['admin','user']),
-    deleteCurrentUser,
+    authorize(['admin']),
+    query('limit')
+        .optional()
+        .isInt({ min: 1, max: 50 })
+        .withMessage('Limit must be between 1 and 50'),
+    query('offset')
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage('Offset mus be greater than 0'),
+    validationError,
+    getAllUser
+)
+//#endregion
+
+//#region Gets user by I'd
+router.get('/:userId',
+    authenticate,
+    authorize(['admin']),
+    param('userId')
+        .notEmpty()
+        .isMongoId()
+        .withMessage('Invalid user ID'),
+    validationError,
+    getUser
+)
+//#endregion
+
+//#region Delete user by I'd
+router.delete('/:userId',
+    authenticate,
+    authorize(['admin']),
+    param('userId')
+        .notEmpty()
+        .isMongoId()
+        .withMessage('Invalid user ID'),
+    validationError,
+    deleteUser,
 )
 //#endregion
 export default router;
