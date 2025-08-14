@@ -27,7 +27,6 @@ import v1Routes from '@/routes/v1';
 /**
  * Types*/
 import type { CorsOptions } from 'cors';
-import * as process from 'node:process';
 
 /**
  *Express app initialization and port initialization
@@ -110,7 +109,7 @@ app.use(limiter);
  * - Logs a success message if the disconnection is successful.
  * - If an error occurs during disconnection, it is logged to the console.
  * - Exits the process with status code `0` (indicating a successful shutdown).*/
-/*
+
 const handleServerShutdown = async () => {
   try {
     await disconnectFromDatabase();
@@ -120,7 +119,7 @@ const handleServerShutdown = async () => {
   catch(error) {
    logger.error('Error during server shutdown',error);
   }
-};*/
+};
 
 /**
  * Listens for termination signals (`SIGTERM` and `SIGINT`).
@@ -131,4 +130,5 @@ const handleServerShutdown = async () => {
  * - When either signal is received, `handleServerShutdown` is executed
  * to ensure proper cleanup.*/
 
-//process.on(`SIGTERM`, handleServerShutdown)
+process.on(`SIGTERM`, handleServerShutdown);
+process.on(`SIGINT`, handleServerShutdown);
